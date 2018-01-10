@@ -294,7 +294,7 @@ namespace mod_db_mysql
         /// <returns></returns>
         public List<ComponentDefinition> ReadComponents(string deviceId, long agentInstanceId)
         {
-            var str = "SELECT * FROM `components` WHERE `device_id` = '{deviceId}' AND `agent_instance_id` = {agentInstanceId}";
+            var str = string.Format("SELECT * FROM `components` WHERE `device_id` = '{0}' AND `agent_instance_id` = {1}", new object[]{this.EscapeString(deviceId), agentInstanceId});
             
             return ReadList<ComponentDefinition>(str);
         }
@@ -303,7 +303,8 @@ namespace mod_db_mysql
         {
             if (!deviceId.IsNullOrEmpty<char>() && !partId.IsNullOrEmpty<char>())
             {
-                string query = "DELETE FROM `parts_rejected` WHERE {(`device_id`='{this.EscapeString(deviceId)}' AND `part_id`='{this.EscapeString(partId)}')}";
+
+                string query = string.Format("DELETE FROM `parts_rejected` WHERE {(`device_id`='{0}' AND `part_id`='{1}')}", new object[]{this.EscapeString(deviceId), this.EscapeString(partId)});
                 return this.Write(query);
             }
             return false;
@@ -313,7 +314,7 @@ namespace mod_db_mysql
         {
             if (!deviceId.IsNullOrEmpty<char>() && !partId.IsNullOrEmpty<char>())
             {
-                string query = "DELETE FROM `parts_verified` WHERE {(`device_id`='{this.EscapeString(deviceId)}' AND `part_id`='{this.EscapeString(partId)}')}";
+                string query = string.Format("DELETE FROM `parts_verified` WHERE {(`device_id`='{0}' AND `part_id`='{1}')}", new object[]{this.EscapeString(deviceId), this.EscapeString(partId)});
                 return this.Write(query);
             }
             return false;
@@ -321,7 +322,7 @@ namespace mod_db_mysql
 
         public ConnectionDefinition ReadConnection(string deviceId)
         {
-            var str = "SELECT * FROM `connections` WHERE `device_id` = '{deviceId}' LIMIT 1";
+            var str = string.Format("SELECT * FROM `connections` WHERE `device_id` = '{0}' LIMIT 1", deviceId);
             return Read<ConnectionDefinition>(str);
         }
 
@@ -334,13 +335,13 @@ namespace mod_db_mysql
 
         public List<DataItemDefinition> ReadDataItems(string deviceId, long agentInstanceId)
         {
-            var str = "SELECT * FROM `data_items` WHERE `device_id` = '{deviceId}' AND `agent_instance_id` = {agentInstanceId}";
+            var str = string.Format("SELECT * FROM `data_items` WHERE `device_id` = '{0}' AND `agent_instance_id` = {1}",new object[]{ this.EscapeString(deviceId), agentInstanceId});
             return ReadList<DataItemDefinition>(str);
         }
 
         public DeviceDefinition ReadDevice(string deviceId, long agentInstanceId)
         {
-            var str = "SELECT * FROM `devices` WHERE `device_id` = '{deviceId}' AND `agent_instance_id` = {agentInstanceId} LIMIT 1";
+            var str = string.Format("SELECT * FROM `devices` WHERE `device_id` = '{0}' AND `agent_instance_id` = {1} LIMIT 1", new object[] { this.EscapeString(deviceId), agentInstanceId });
             return Read<DeviceDefinition>(str);
         }
 
@@ -468,7 +469,7 @@ namespace mod_db_mysql
 
         public Status ReadStatus(string deviceId)
         {
-            var str = "SELECT * FROM `status` WHERE `device_id` = '{deviceId}' LIMIT 1";
+            var str =string.Format( "SELECT * FROM `status` WHERE `device_id` = '{0}' LIMIT 1",deviceId);
             return Read<Status>(str);
         }
 

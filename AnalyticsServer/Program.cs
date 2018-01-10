@@ -11,6 +11,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Timers;
 using TrakHound.Api.v2;
+using System.Threading;
 
 namespace TrakHound.AnalyticsServer
 {
@@ -21,7 +22,7 @@ namespace TrakHound.AnalyticsServer
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static RestServer server;
         private static ServiceBase service;
-        private static Timer menuUpdateTimer;
+        private static System.Timers.Timer menuUpdateTimer;
         private static bool started = false;
 
         /// <summary>
@@ -45,6 +46,7 @@ namespace TrakHound.AnalyticsServer
 
                         Start();
                         Console.ReadLine();
+
                         Stop();
                         Console.ReadLine();
                         break;
@@ -52,7 +54,7 @@ namespace TrakHound.AnalyticsServer
                     // Install the Service
                     case "install":
 
-                        InstallService();
+                        InstallService();                     
                         break;
 
                     // Uninstall the Service
@@ -131,7 +133,7 @@ namespace TrakHound.AnalyticsServer
             }
 
             if (server != null) server.Stop();
-
+            logger.Info("Stop TrakHound-AnalyticsServer Service");
             started = false;
         }
 

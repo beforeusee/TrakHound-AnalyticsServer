@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using System.Web;
 
 namespace TrakHound.AnalyticsServer
 {
@@ -59,7 +60,7 @@ namespace TrakHound.AnalyticsServer
             {
                 try
                 {
-                    // (Access Denied - Exception)
+                    // (Access Denied - Exception)管理员运行
                     // Must grant permissions to use URL (for each Prefix) in Windows using the command below
                     // CMD: netsh http add urlacl url = "http://localhost/" user = everyone
 
@@ -82,9 +83,11 @@ namespace TrakHound.AnalyticsServer
                     // Listen for Requests
                     while (listener.IsListening && !stop.WaitOne(0, true))
                     {
+                        log.Info("Listen for Requests");
                         var result = listener.BeginGetContext(ListenerCallback, listener);
                         result.AsyncWaitHandle.WaitOne();
                     }
+
                 }
                 catch (Exception ex)
                 {
@@ -94,7 +97,7 @@ namespace TrakHound.AnalyticsServer
         }
 
         private void ListenerCallback(IAsyncResult result)
-        {
+        {   
             try
             {
                 var listenerClosure = (HttpListener)result.AsyncState;
