@@ -35,6 +35,7 @@ namespace mod_rest_status
                         var status = Database.ReadStatus(query.DeviceId);
                         if (status != null)
                         {
+    
                             // Write DeviceItem JSON to stream
                             string json = Json.Convert.ToJson(status, true);
                             var bytes = Encoding.UTF8.GetBytes(json);

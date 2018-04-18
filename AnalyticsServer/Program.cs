@@ -150,8 +150,8 @@ namespace TrakHound.AnalyticsServer
         private static void PrintHeader()
         {
             logger.Info("---------------------------");
-            logger.Info("TrakHound AnalyticsServer : v" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            logger.Info(@"Copyright 2017 TrakHound Inc., All Rights Reserved");
+            logger.Info("AnalyticsServer : v" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            logger.Info(@"Copyright 2018 Buaa., All Rights Reserved");
             logger.Info("---------------------------");
         }
     }

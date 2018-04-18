@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database-Modules", "Databas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mod_db_mysql", "Database-Modules\mod_db_mysql\mod_db_mysql.csproj", "{FB61AD6F-4990-4242-9063-824B828D995A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mod_rest_monitors", "Modules\mod_rest_monitors\mod_rest_monitors.csproj", "{A9DCB678-5791-4B35-9043-66D56AA868DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{FB61AD6F-4990-4242-9063-824B828D995A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB61AD6F-4990-4242-9063-824B828D995A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB61AD6F-4990-4242-9063-824B828D995A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9DCB678-5791-4B35-9043-66D56AA868DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9DCB678-5791-4B35-9043-66D56AA868DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9DCB678-5791-4B35-9043-66D56AA868DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DCB678-5791-4B35-9043-66D56AA868DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +105,7 @@ Global
 		{39080975-BB11-4A35-BD45-ED2DF7DCBD52} = {C4FA7BEC-7C1A-462B-8DDB-FEEA9DF52938}
 		{70BBCA2A-C167-4FE7-85FA-FACC8CEF18C8} = {C4FA7BEC-7C1A-462B-8DDB-FEEA9DF52938}
 		{933541FC-5DEC-4ED4-A85E-32E1EC0AD94F} = {C4FA7BEC-7C1A-462B-8DDB-FEEA9DF52938}
+		{A9DCB678-5791-4B35-9043-66D56AA868DC} = {C4FA7BEC-7C1A-462B-8DDB-FEEA9DF52938}
 		{FB61AD6F-4990-4242-9063-824B828D995A} = {5958B5BC-3219-4408-9BF5-E6203230C497}
 	EndGlobalSection
 EndGlobal

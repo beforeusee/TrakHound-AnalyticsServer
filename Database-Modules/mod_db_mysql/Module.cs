@@ -227,7 +227,7 @@ namespace mod_db_mysql
         }
 
         /// <summary>
-        /// get the list of Assets
+        /// get the list of Assets，注意：此处的SQL语句可能会出错，请将类似{deviceId}的替换为正确的格式。
         /// </summary>
         /// <param name="deviceId"></param>
         /// <param name="assetId"></param>
@@ -345,6 +345,15 @@ namespace mod_db_mysql
             return Read<DeviceDefinition>(str);
         }
 
+        /// <summary>
+        /// get the a list of RejectedPart,注意:SQL语句格式错误，需要更改为正确的格式。
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <param name="partIds"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="at"></param>
+        /// <returns></returns>
         public List<RejectedPart> ReadRejectedParts(string deviceId, string[] partIds, DateTime from, DateTime to, DateTime at)
         {
             List<RejectedPart> list = new List<RejectedPart>();
@@ -409,7 +418,7 @@ namespace mod_db_mysql
                         str5 = str5 + " OR ";
                     }
                 }
-                str5 = "({str5}) AND ";
+                str5 = str5 + " AND ";
             }
             List<string> list2 = new List<string>();
             if ((from > DateTime.MinValue) && (to > DateTime.MinValue))
@@ -473,6 +482,17 @@ namespace mod_db_mysql
             return Read<Status>(str);
         }
 
+        
+
+        /// <summary>
+        /// get the list of VerifiedParts,注意：函数中的SQL语句参数格式错误，请更正
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <param name="partIds"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="at"></param>
+        /// <returns></returns>
         public List<VerifiedPart> ReadVerifiedParts(string deviceId, string[] partIds, DateTime from, DateTime to, DateTime at)
         {
             List<VerifiedPart> list = new List<VerifiedPart>();
