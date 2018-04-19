@@ -8,6 +8,12 @@ namespace mod_rest_monitors
         [JsonProperty("device_id")]
         public string DeviceId { get; set; }
 
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("uuid")]
+        public string Uuid { get; set; }
+
         [JsonProperty("agent_instance_id")]
         public long AgentInstanceId { get; set; }
 
@@ -32,8 +38,11 @@ namespace mod_rest_monitors
         [JsonProperty("controller_mode")]
         public string ControllerMode { get; set; }
 
-        [JsonProperty("system")]
-        public string System { get; set; }
+        [JsonProperty("system_status")]
+        public string SystemStatus { get; set; }
+
+        [JsonProperty("system_message")]
+        public string SystemMessage { get; set; }
 
         [JsonProperty("execution")]
         public string Execution { get; set; }
@@ -41,14 +50,14 @@ namespace mod_rest_monitors
         [JsonProperty("program")]
         public string Program { get; set; }
 
-        [JsonProperty("spindle_velocity")]
-        public string SpindleVelocity { get; set; }
+        [JsonProperty("spindle_rotary_velocity")]
+        public string SpindleRotaryVelocity { get; set; }
 
         [JsonProperty("spindle_load")]
         public string SpindleLoad { get; set; }
 
-        [JsonProperty("feedrate")]
-        public string Feedrate { get; set; }
+        [JsonProperty("path_feedrate")]
+        public string PathFeedrate { get; set; }
 
         [JsonProperty("xpos")]
         public string XPos { get; set; }
@@ -68,14 +77,14 @@ namespace mod_rest_monitors
         [JsonProperty("cangle")]
         public string CAngle { get; set; }
 
-        [JsonProperty("xvelocity")]
-        public string XVelocity { get; set; }
+        [JsonProperty("xaxis_feedrate")]
+        public string XAxisFeedrate { get; set; }
 
-        [JsonProperty("yvelocity")]
-        public string YVelocity { get; set; }
+        [JsonProperty("yaxis_feedrate")]
+        public string YAxisFeedrate { get; set; }
 
-        [JsonProperty("zvelocity")]
-        public string ZVelocity { get; set; }
+        [JsonProperty("zaxis_feedrate")]
+        public string ZAxisFeedrate { get; set; }
 
         [JsonProperty("arotary_velocity")]
         public string ARotaryVelocity { get; set; }
@@ -107,8 +116,8 @@ namespace mod_rest_monitors
         [JsonProperty("power")]
         public string Power { get; set; }
 
-        [JsonProperty("energy_consumption")]
-        public string EnergyConsumption { get; set; }
+        [JsonProperty("electrical_energy")]
+        public string ElectricalEnergy { get; set; }
 
         [JsonProperty("chatter_vibration")]
         public string ChatterVibration { get; set; }

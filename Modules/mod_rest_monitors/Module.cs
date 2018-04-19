@@ -48,11 +48,29 @@ namespace mod_rest_monitors
                             //新建监控数据对象
                             DeviceMonitorData monitorData = new DeviceMonitorData();
 
+                            initDeviceMonitorData(monitorData);
+
                             if (!string.IsNullOrEmpty(deviceId))
                             {
                                 monitorData.DeviceId = deviceId;
                                 monitorData.Address = connection.Address;
                                 monitorData.Port = connection.Port;
+
+                                //从数据库检索Agent代理信息
+                                var agent = Database.ReadAgent(deviceId);
+                                if (agent != null)
+                                {
+                                    monitorData.AgentInstanceId = agent.InstanceId;
+                                    monitorData.Timestamp = agent.Timestamp;
+                                }
+
+                                //检索Device信息，此处检索name和uuid
+                                var device = Database.ReadDevice(deviceId, monitorData.AgentInstanceId);
+                                if(device!=null)
+                                {
+                                    monitorData.Name = device.Name;
+                                    monitorData.Uuid = device.Uuid;
+                                }
 
                                 //数据库检索Status
                                 var status = Database.ReadStatus(deviceId);
@@ -60,6 +78,7 @@ namespace mod_rest_monitors
                                 {
                                     monitorData.Available = status.Available;
                                     monitorData.Connected = status.Connected;
+                                    monitorData.Timestamp = status.Timestamp;
                                 }
 
                                 //如果机床Available可用并且Connected上代理进行数据的检索
@@ -73,8 +92,6 @@ namespace mod_rest_monitors
                                         foreach (var sample in samples)
                                         {
 
-                                            monitorData.AgentInstanceId = sample.AgentInstanceId;
-                                            monitorData.Timestamp = sample.Timestamp;
 
                                             //根据约定的数据的id命名规则来判断数据项具体属于DeviceMonitorData的哪一个成员
                                             //急停
@@ -82,29 +99,25 @@ namespace mod_rest_monitors
                                             {
                                                 monitorData.EStop = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.EStop = "UNAVAILABLE";
-                                            }
+
 
                                             //控制器模式
                                             if (sample.Id.Contains("_controller_mode"))
                                             {
                                                 monitorData.ControllerMode = sample.CDATA;
                                             }
-                                            else
+
+
+                                            //系统报警状态Fault、Warning等
+                                            if (sample.Id.Contains("_system_status"))
                                             {
-                                                monitorData.ControllerMode = "UNAVAILABLE";
+                                                monitorData.SystemStatus = sample.CDATA;
                                             }
 
-                                            //系统报警
-                                            if (sample.Id.Contains("_system"))
+                                            //系统报警具体信息
+                                            if (sample.Id.Contains("_system_message"))
                                             {
-                                                monitorData.System = sample.CDATA;
-                                            }
-                                            else
-                                            {
-                                                monitorData.System = "UNAVAILABLE";
+                                                monitorData.SystemMessage = sample.CDATA;
                                             }
 
                                             //程序执行状态
@@ -112,243 +125,163 @@ namespace mod_rest_monitors
                                             {
                                                 monitorData.Execution = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.Execution = "UNAVAILABLE";
-                                            }
+
 
                                             //程序名
                                             if (sample.Id.Contains("_program"))
                                             {
                                                 monitorData.Execution = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.Program = "UNAVAILABLE";
-                                            }
+
 
                                             //主轴转速
-                                            if (sample.Id.Contains("_spindle_velocity"))
+                                            if (sample.Id.Contains("_spindle_rotary_velocity"))
                                             {
-                                                monitorData.SpindleVelocity = sample.CDATA;
-                                            }
-                                            else
-                                            {
-                                                monitorData.SpindleVelocity = "UNAVAILABLE";
+                                                monitorData.SpindleRotaryVelocity = sample.CDATA;
                                             }
 
+
                                             //主轴负载
-                                            if (sample.Id.Contains("spindle_load"))
+                                            if (sample.Id.Contains("_spindle_load"))
                                             {
                                                 monitorData.SpindleLoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.SpindleLoad = "UNAVAILABLE";
-                                            }
+
 
                                             //进给速度
-                                            if (sample.Id.Contains("_feedrate"))
+                                            if (sample.Id.Contains("_path_feedrate"))
                                             {
-                                                monitorData.Feedrate = sample.CDATA;
+                                                monitorData.PathFeedrate = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.Feedrate = "UNAVAILABLE";
-                                            }
+
 
                                             //XYZABC进给轴位置
                                             if (sample.Id.Contains("_xpos"))
                                             {
                                                 monitorData.XPos = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.XPos = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_ypos"))
                                             {
                                                 monitorData.YPos = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.YPos = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_zpos"))
                                             {
                                                 monitorData.ZPos = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.ZPos = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_aangle"))
                                             {
                                                 monitorData.AAngle = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.AAngle = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_bangle"))
                                             {
                                                 monitorData.BAngle = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.BAngle = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_cangle"))
                                             {
                                                 monitorData.CAngle = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.CAngle = "UNAVAILABLE";
-                                            }
+
 
                                             //XYZABC进给轴速度
                                             if (sample.Id.Contains("_xvelocity"))
                                             {
-                                                monitorData.XVelocity = sample.CDATA;
+                                                monitorData.XAxisFeedrate = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.XVelocity = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_yvelocity"))
                                             {
-                                                monitorData.YVelocity = sample.CDATA;
+                                                monitorData.YAxisFeedrate = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.YVelocity = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_zvelocity"))
                                             {
-                                                monitorData.ZVelocity = sample.CDATA;
+                                                monitorData.ZAxisFeedrate = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.ZVelocity = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_arotary_velocity"))
                                             {
                                                 monitorData.ARotaryVelocity = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.ARotaryVelocity = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_brotary_velocity"))
                                             {
                                                 monitorData.BRotaryVelocity = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.BRotaryVelocity = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_crotary_velocity"))
                                             {
                                                 monitorData.CRotaryVelocity = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.CRotaryVelocity = "UNAVAILABLE";
-                                            }
+
 
                                             //XYZABC进给轴负载
                                             if (sample.Id.Contains("_xload"))
                                             {
                                                 monitorData.XLoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.XLoad = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_yload"))
                                             {
                                                 monitorData.YLoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.YLoad = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_zload"))
                                             {
                                                 monitorData.ZLoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.ZLoad = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_aload"))
                                             {
                                                 monitorData.ALoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.ALoad = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_bload"))
                                             {
                                                 monitorData.BLoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.BLoad = "UNAVAILABLE";
-                                            }
+
 
                                             if (sample.Id.Contains("_cload"))
                                             {
                                                 monitorData.CLoad = sample.CDATA;
                                             }
-                                            else
-                                            {
-                                                monitorData.CLoad = "UNAVAILABLE";
-                                            }
+
 
                                             //传感器功率、能耗
                                             if (sample.Id.Contains("_power"))
                                             {
                                                 monitorData.Power = sample.CDATA;
                                             }
-                                            else
+
+                                            if (sample.Id.Contains("_electrical_energy"))
                                             {
-                                                monitorData.Power = "UNAVAILABLE";
+                                                monitorData.ElectricalEnergy = sample.CDATA;
                                             }
 
-                                            if (sample.Id.Contains("_energy_consumption"))
-                                            {
-                                                monitorData.EnergyConsumption = sample.CDATA;
-                                            }
-                                            else
-                                            {
-                                                monitorData.EnergyConsumption = "UNAVAILABLE";
-                                            }
 
                                             //传感器监测的机床颤振信息
                                             if (sample.Id.Contains("_chatter_vibration"))
                                             {
                                                 monitorData.ChatterVibration = sample.CDATA;
-                                            }
-                                            else
-                                            {
-                                                monitorData.ChatterVibration = "UNAVAILABLE";
                                             }
                                         }
                                     }
@@ -388,11 +321,29 @@ namespace mod_rest_monitors
                                 //新建监控数据对象
                                 DeviceMonitorData monitorData = new DeviceMonitorData();
 
+                                initDeviceMonitorData(monitorData);
+
                                 if (!string.IsNullOrEmpty(deviceId))
                                 {
                                     monitorData.DeviceId = deviceId;
                                     monitorData.Address = connection.Address;
                                     monitorData.Port = connection.Port;
+
+                                    //从数据库检索Agent代理信息
+                                    var agent = Database.ReadAgent(deviceId);
+                                    if (agent != null)
+                                    {
+                                        monitorData.AgentInstanceId = agent.InstanceId;
+                                        monitorData.Timestamp = agent.Timestamp;
+                                    }
+
+                                    //检索Device信息，此处检索name和uuid
+                                    var device = Database.ReadDevice(deviceId, monitorData.AgentInstanceId);
+                                    if (device != null)
+                                    {
+                                        monitorData.Name = device.Name;
+                                        monitorData.Uuid = device.Uuid;
+                                    }
 
                                     //数据库检索Status
                                     var status = Database.ReadStatus(deviceId);
@@ -413,38 +364,31 @@ namespace mod_rest_monitors
                                             foreach (var sample in samples)
                                             {
 
-                                                monitorData.AgentInstanceId = sample.AgentInstanceId;
-                                                monitorData.Timestamp = sample.Timestamp;
-
                                                 //根据约定的数据的id命名规则来判断数据项具体属于DeviceMonitorData的哪一个成员
                                                 //急停
                                                 if (sample.Id.Contains("_estop"))
                                                 {
                                                     monitorData.EStop = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.EStop = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //控制器模式
                                                 if (sample.Id.Contains("_controller_mode"))
                                                 {
                                                     monitorData.ControllerMode = sample.CDATA;
                                                 }
-                                                else
+                                                
+
+                                                //系统报警状态Fault、Warning等
+                                                if (sample.Id.Contains("_system_status"))
                                                 {
-                                                    monitorData.ControllerMode = "UNAVAILABLE";
+                                                    monitorData.SystemStatus = sample.CDATA;
                                                 }
 
-                                                //系统报警
-                                                if (sample.Id.Contains("_system"))
+                                                //系统报警具体信息
+                                                if (sample.Id.Contains("_system_message"))
                                                 {
-                                                    monitorData.System = sample.CDATA;
-                                                }
-                                                else
-                                                {
-                                                    monitorData.System = "UNAVAILABLE";
+                                                    monitorData.SystemMessage = sample.CDATA;
                                                 }
 
                                                 //程序执行状态
@@ -452,244 +396,165 @@ namespace mod_rest_monitors
                                                 {
                                                     monitorData.Execution = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.Execution = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //程序名
                                                 if (sample.Id.Contains("_program"))
                                                 {
                                                     monitorData.Execution = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.Program = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //主轴转速
-                                                if (sample.Id.Contains("_spindle_velocity"))
+                                                if (sample.Id.Contains("_spindle_rotary_velocity"))
                                                 {
-                                                    monitorData.SpindleVelocity = sample.CDATA;
+                                                    monitorData.SpindleRotaryVelocity = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.SpindleVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //主轴负载
-                                                if (sample.Id.Contains("spindle_load"))
+                                                if (sample.Id.Contains("_spindle_load"))
                                                 {
                                                     monitorData.SpindleLoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.SpindleLoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //进给速度
-                                                if (sample.Id.Contains("_feedrate"))
+                                                if (sample.Id.Contains("_path_feedrate"))
                                                 {
-                                                    monitorData.Feedrate = sample.CDATA;
+                                                    monitorData.PathFeedrate = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.Feedrate = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //XYZABC进给轴位置
                                                 if (sample.Id.Contains("_xpos"))
                                                 {
                                                     monitorData.XPos = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.XPos = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_ypos"))
                                                 {
                                                     monitorData.YPos = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.YPos = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_zpos"))
                                                 {
                                                     monitorData.ZPos = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.ZPos = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_aangle"))
                                                 {
                                                     monitorData.AAngle = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.AAngle = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_bangle"))
                                                 {
                                                     monitorData.BAngle = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.BAngle = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_cangle"))
                                                 {
                                                     monitorData.CAngle = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.CAngle = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //XYZABC进给轴速度
                                                 if (sample.Id.Contains("_xvelocity"))
                                                 {
-                                                    monitorData.XVelocity = sample.CDATA;
+                                                    monitorData.XAxisFeedrate = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.XVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_yvelocity"))
                                                 {
-                                                    monitorData.YVelocity = sample.CDATA;
+                                                    monitorData.YAxisFeedrate = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.YVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_zvelocity"))
                                                 {
-                                                    monitorData.ZVelocity = sample.CDATA;
+                                                    monitorData.ZAxisFeedrate = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.ZVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_arotary_velocity"))
                                                 {
                                                     monitorData.ARotaryVelocity = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.ARotaryVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_brotary_velocity"))
                                                 {
                                                     monitorData.BRotaryVelocity = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.BRotaryVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_crotary_velocity"))
                                                 {
                                                     monitorData.CRotaryVelocity = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.CRotaryVelocity = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //XYZABC进给轴负载
                                                 if (sample.Id.Contains("_xload"))
                                                 {
                                                     monitorData.XLoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.XLoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_yload"))
                                                 {
                                                     monitorData.YLoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.YLoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_zload"))
                                                 {
                                                     monitorData.ZLoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.ZLoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_aload"))
                                                 {
                                                     monitorData.ALoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.ALoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_bload"))
                                                 {
                                                     monitorData.BLoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.BLoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 if (sample.Id.Contains("_cload"))
                                                 {
                                                     monitorData.CLoad = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.CLoad = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //传感器功率、能耗
                                                 if (sample.Id.Contains("_power"))
                                                 {
                                                     monitorData.Power = sample.CDATA;
                                                 }
-                                                else
+                                                
+                                                if (sample.Id.Contains("_electrical_energy"))
                                                 {
-                                                    monitorData.Power = "UNAVAILABLE";
+                                                    monitorData.ElectricalEnergy = sample.CDATA;
                                                 }
-
-                                                if (sample.Id.Contains("_energy_consumption"))
-                                                {
-                                                    monitorData.EnergyConsumption = sample.CDATA;
-                                                }
-                                                else
-                                                {
-                                                    monitorData.EnergyConsumption = "UNAVAILABLE";
-                                                }
+                                                
 
                                                 //传感器监测的机床颤振信息
                                                 if (sample.Id.Contains("_chatter_vibration"))
                                                 {
                                                     monitorData.ChatterVibration = sample.CDATA;
                                                 }
-                                                else
-                                                {
-                                                    monitorData.ChatterVibration = "UNAVAILABLE";
-                                                }
+                                                
                                             }
                                         }
                                     }
@@ -731,6 +596,49 @@ namespace mod_rest_monitors
             }
 
             return false;
+        }
+
+        private void initDeviceMonitorData(DeviceMonitorData monitorData)
+        {
+            monitorData.DeviceId = "";
+            monitorData.Name = "";
+            monitorData.Uuid = "";
+            monitorData.AgentInstanceId = 123;
+            monitorData.Address = "";
+            monitorData.Port = 80;
+            monitorData.Timestamp = DateTime.Now;
+            monitorData.Available = false;
+            monitorData.Connected = false;
+            monitorData.EStop = "";
+            monitorData.ControllerMode = "";
+            monitorData.SystemStatus = "";
+            monitorData.SystemMessage = "";
+            monitorData.Execution = "";
+            monitorData.Program = "";
+            monitorData.SpindleRotaryVelocity = "";
+            monitorData.SpindleLoad = "";
+            monitorData.PathFeedrate = "";
+            monitorData.XPos = "";
+            monitorData.YPos = "";
+            monitorData.ZPos = "";
+            monitorData.AAngle = "";
+            monitorData.BAngle = "";
+            monitorData.CAngle = "";
+            monitorData.XAxisFeedrate = "";
+            monitorData.YAxisFeedrate = "";
+            monitorData.ZAxisFeedrate = "";
+            monitorData.ARotaryVelocity = "";
+            monitorData.BRotaryVelocity = "";
+            monitorData.CRotaryVelocity = "";
+            monitorData.XLoad = "";
+            monitorData.YLoad = "";
+            monitorData.ZLoad = "";
+            monitorData.ALoad = "";
+            monitorData.BLoad = "";
+            monitorData.CLoad = "";
+            monitorData.Power = "";
+            monitorData.ElectricalEnergy = "";
+            monitorData.ChatterVibration = "";
         }
 
         public bool SendData(Uri requestUri, Stream stream)
